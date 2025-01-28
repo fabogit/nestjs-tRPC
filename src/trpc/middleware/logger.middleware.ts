@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MiddlewareOptions, TRPCMiddleware } from 'nestjs-trpc';
+import { IAppContext } from '../context/context.interface';
 
 @Injectable()
 export class LoggerMiddleware implements TRPCMiddleware {
@@ -7,16 +8,21 @@ export class LoggerMiddleware implements TRPCMiddleware {
     timestamp: true,
   });
 
-  async use(opts: MiddlewareOptions) {
+  async use(opts: MiddlewareOptions<IAppContext>) {
     const start = Date.now();
     const { next, path, type } = opts;
 
     try {
       const result = await next(); // Await the next middleware/handler
+      const { req, res } = opts.ctx;
       const meta = {
         path,
         type,
         durationMs: Date.now() - start,
+        method: req.method,
+        statusCode: res.statusCode,
+        ip: req.ip,
+        headers: req.headers,
       };
       this.logger.log('Success', meta);
       // Return the result to continue the chain

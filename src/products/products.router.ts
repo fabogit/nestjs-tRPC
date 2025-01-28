@@ -1,8 +1,16 @@
-import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
+import {
+  Ctx,
+  Input,
+  Mutation,
+  Query,
+  Router,
+  UseMiddlewares,
+} from 'nestjs-trpc';
+import { z } from 'zod';
 import { ProductsService } from './products.service';
 import { Product, productSchema } from './product.schema';
-import { z } from 'zod';
 import { LoggerMiddleware } from 'src/trpc/middleware/logger.middleware';
+import { IAppContext } from 'src/trpc/context/context.interface';
 
 @Router({ alias: 'products' })
 @UseMiddlewares(LoggerMiddleware)
@@ -28,7 +36,8 @@ export class ProductsRouter {
     input: productSchema,
     output: productSchema,
   })
-  createProduct(@Input() productData: Product) {
+  createProduct(@Input() productData: Product, @Ctx() context: IAppContext) {
+    console.log('App context', context);
     return this.productsService.createProduct(productData);
   }
 
