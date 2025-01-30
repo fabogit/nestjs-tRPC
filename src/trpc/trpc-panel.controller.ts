@@ -3,6 +3,10 @@ import { AnyRouter } from '@trpc/server';
 import { AppRouterHost } from 'nestjs-trpc';
 import { renderTrpcPanel } from 'trpc-panel';
 
+/**
+ * Controller for serving the TRPC panel.
+ * This controller provides an endpoint to render the TRPC panel for API exploration.
+ */
 @Controller()
 export class TrpcPanelController implements OnModuleInit {
   private appRouter!: AnyRouter;
@@ -10,10 +14,18 @@ export class TrpcPanelController implements OnModuleInit {
   constructor(
     @Inject(AppRouterHost) private readonly appRouterHost: AppRouterHost,
   ) {}
+
+  /**
+   * Initializes the controller and retrieves the TRPC router.
+   */
   onModuleInit() {
     this.appRouter = this.appRouterHost.appRouter;
   }
 
+  /**
+   * Serves the TRPC panel.
+   * @returns The rendered TRPC panel HTML.
+   */
   @All('/panel')
   panel() {
     return renderTrpcPanel(this.appRouter, {
